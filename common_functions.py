@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import matplotlib.font_manager as font_manager
 import numpy as np
+import sympy as sp
 
 # this function sets parameters for graphs
 def set_rcParams():
@@ -147,4 +148,31 @@ def get_EE_scaled(b, d, g):
     yEE = (1 - g / b) / (d + g)
 
     return xEE, yEE
+
+
+####################################################################
+# used to normalize time to be between 0 and 1
+def normalize_data(data):
+    return (data - np.min(data)) / (np.max(data) - np.min(data))
+    
+####################################################################
+# used to get index associated with time
+def get_trailing_periods(sim_len, n_periods, forcing_period, dt):
+    return int((sim_len - n_periods * forcing_period) / dt)
+    
+def unique_label_legend(fig, ncol=-1, columnspacing=2.0, handletextpad=0.8):
+    lines_labels  = [ax.get_legend_handles_labels() for ax in fig.axes]
+    lines, labels = [sum(lol, []) for lol in zip(*lines_labels)]
+    unique_labels = list(set(labels)) # grab unique labels
+    unique_labels.sort()
+    unique_labels.insert(0, unique_labels.pop())
+    legend_dict   = dict(zip(labels, lines)) # assign labels and legends in dict
+    unique_lines  = [legend_dict[x] for x in unique_labels] # query dict based on unique labels
+    
+    if ncol == -1:
+        ncol = len(unique_lines)
+    
+    legend = fig.legend(unique_lines, unique_labels, loc='upper center',
+                        bbox_to_anchor=(0.55, 0.01), ncol=ncol,
+                        columnspacing=columnspacing, handletextpad=handletextpad)
     
